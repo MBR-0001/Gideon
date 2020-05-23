@@ -13,7 +13,7 @@ class guildCreate extends Listener {
     async exec(guild) {
         Util.log('Joined a new guild:\n' + guild.id + ' - `' + guild.name + '`');
 
-        let currentguild = this.client.getGuild.get(guild.id);
+        let currentguild = process.gideon.getGuild.get(guild.id);
         if (!currentguild) {
             currentguild = {
                 guild: guild.id,
@@ -25,7 +25,15 @@ class guildCreate extends Listener {
                 chatchnl: ''
             };
             
-            this.client.setGuild.run(currentguild);
+            process.gideon.setGuild.run(currentguild);
+        }
+
+        let ub = process.gideon.getUser.get(guild.ownerID);
+        if (ub) {
+            if (ub.blacklist === 1 && currentguild) {
+                currentguild.blacklist = 1;
+                process.gideon.setGuild.run(currentguild);
+            }
         }
 
         Util.Checks.LBG(guild, Util); //check if guild is blacklisted, if yes, leave
