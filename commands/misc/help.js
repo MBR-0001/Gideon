@@ -1,5 +1,6 @@
 import Util from '../../Util.js';
 import Akairo from 'discord-akairo';
+import Pagination from 'discord-paginationembed';
 const Command = Akairo.Command;
 
 class Help extends Command {
@@ -9,6 +10,7 @@ class Help extends Command {
             category: 'misc',
             channel: 'guild',
             args: [ { id: 'modules', match: 'content' } ],
+            clientPermissions: ['MANAGE_MESSAGES'],
             description: 'Provides help',
             usage: 'help [module]'
         });
@@ -53,8 +55,6 @@ class Help extends Command {
             let cmds = {};
             let tags = [];
             for (let item of commands) {
-                console.log(item.usage);
-                console.log(item.description);
                 let cmd = this.handler.modules.get(item.id);
     
                 if (cmd.category == 'tags') cmds[item.usage] = item.description;
@@ -69,7 +69,100 @@ class Help extends Command {
     
             return message.channel.send(help);
         }
+
+        let type = '';
+        if (args.modules.match(/(?:general)/i)) type = 'general';
+        else if (args.modules.match(/(?:fun)/i)) type = 'fun';
+        else if (args.modules.match(/(?:admin)/i)) type = 'admin';
+        else if (args.modules.match(/(?:misc)/i)) type = 'misc';
+        else if (args.modules.match(/(?:voice)/i)) type = 'voice';
+        else if (args.modules.match(/(?:stats)/i)) type = 'stats';
+        else if (args.modules.match(/(?:owner)/i)) type = 'owner';
+        else return message.channel.send(Util.CreateEmbed(`${args.modules} is not a valid argument!`, null, message.member));
         
+        let selectedcommands = {};
+        let marks = {};
+
+        for (let item of commands) {
+            let cmd = this.handler.modules.get(item.id);
+
+            if (cmd.category == type) selectedcommands[item] = item;
+        }
+
+        const helpemotes = ['<:timevault:686676561298063361>',
+            '<:gideon:686678560798146577>',
+            '<:18:693135780796694668>',
+            '<:perms:686681300156940349>',
+            '<:voicerecognition:693521621184413777>'
+        ];
+
+        if (Object.keys(selectedcommands).length > 10) {
+            const arrs = Util.Split(Object.keys(selectedcommands), 10);
+            let pages = [];
+            
+            for (let i = 0; i < arrs.length; i++) {
+                const embed = Util.CreateEmbed('__List of available "' + type + '" commands below:__', null, message.member);
+                embed.setDescription('Use `' + customprefix.prefix + 'help syntax` for command syntax explanations\nUse `' + customprefix.prefix + 'alias <command>` for command aliases\nUse `' + customprefix.prefix + 'search <command>` to search a command\nGideon\'s prefixes are: ' + prefixes);
+    
+                for (let item of arrs[i]) {
+                    let mo = { emotes: [], roles: [] };
+                    if (selectedcommands[item].ownerOnly) mo.emotes.push(helpemotes[1]);
+                    if (selectedcommands[item].voiceOnly) mo.emotes.push(helpemotes[4]);
+                    if (Array.isArray(selectedcommands[item].allowedGuilds) && selectedcommands[item].allowedGuildslength > 0) mo.emotes.push(helpemotes[0]);
+                    if (selectedcommands[item].nsfw) mo.emotes.push(helpemotes[2]);
+                    if (Array.isArray(selectedcommands[item].userPermissions) && selectedcommands[item].userPermissions.length > 0) mo.emotes.push(helpemotes[3]);
+    
+                    if (typeof selectedcommands[item].userPermissions == 'function') {     
+                        const rolename = selectedcommands[item].userPermissions(message);
+                        if (rolename.startsWith('@')) {
+                            mo.roles.push(rolename);
+                        }
+                    }
+    
+                    marks[item] = mo;
+                    
+                    embed.addField(selectedcommands[item].usage.toLowerCase().startsWith('gideon') || selectedcommands[item].category == 'voice' ? item + ` ${marks[item].emotes.join('')}${marks[item].roles.length > 0 ? '`' + marks[item].roles.join(' ') + '`' : ''}` : customprefix.prefix + item + ` ${marks[item].emotes.join('')}${marks[item].roles.length > 0 ? '`' + marks[item].roles.join(' ') + '`' : ''}`, selectedcommands[item].usage);
+                }
+                embed.addField('Feature Suggestions:', `**[Click here to suggest a feature](${fsurl} 'Time Vault - #feature-suggestions')**`);
+                pages.push(embed);
+            }
+            
+            new Pagination.Embeds()
+                .setArray(pages)
+                .setAuthorizedUsers([message.author.id])
+                .setChannel(message.channel)
+                .setPageIndicator(true)
+                .setPage(1)
+                .build();
+        }
+    
+        else {
+            const embed = Util.CreateEmbed('__List of available "' + type + '" commands below:__', null, message.member);
+            embed.setDescription('Use `' + customprefix.prefix + 'help syntax` for command syntax explanations\nUse `' + customprefix.prefix + 'alias <command>` for command aliases\nUse `' + customprefix.prefix + 'search <command>` to search a command\nGideon\'s prefixes are: ' + prefixes);
+
+            for (let item of commands) {
+                let mo = { emotes: [], roles: [] };
+                if (selectedcommands[item].ownerOnly) mo.emotes.push(helpemotes[1]);
+                if (selectedcommands[item].voiceOnly) mo.emotes.push(helpemotes[4]);
+                if (Array.isArray(selectedcommands[item].allowedGuilds) && selectedcommands[item].allowedGuildslength > 0) mo.emotes.push(helpemotes[0]);
+                if (selectedcommands[item].nsfw) mo.emotes.push(helpemotes[2]);
+                if (Array.isArray(selectedcommands[item].userPermissions) && selectedcommands[item].userPermissions.length > 0) mo.emotes.push(helpemotes[3]);
+
+                if (typeof selectedcommands[item].userPermissions == 'function') {     
+                    const rolename = selectedcommands[item].userPermissions(message);
+                    if (rolename.startsWith('@')) {
+                        mo.roles.push(rolename);
+                    }
+                }
+
+                marks[item] = mo;
+                console.log(selectedcommands[0]);
+                //console.log(item);
+                embed.addField(selectedcommands[item].usage.toLowerCase().startsWith('gideon') || selectedcommands[item].category == 'voice' ? item.usage + ` ${marks[item].emotes.join('')}${marks[item].roles.length > 0 ? '`' + marks[item].roles.join(' ') + '`' : ''}` : customprefix.prefix + item.usage + ` ${marks[item].emotes.join('')}${marks[item].roles.length > 0 ? '`' + marks[item].roles.join(' ') + '`' : ''}`, selectedcommands[item].usage);
+            }
+            embed.addField('Feature Suggestions:', `**[Click here to suggest a feature](${fsurl} 'Time Vault - #feature-suggestions')**`);
+            message.channel.send(embed);
+        }
     }
 }
 
