@@ -1,11 +1,6 @@
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class ABM extends Command {
     constructor() {
@@ -20,6 +15,9 @@ class ABM extends Command {
         });
     }
 
+    /**
+     * @param {Discord.Message} message 
+     */
     async exec(message) {
         let abm = this.client.getGuild.get(message.guild.id);
         if (!abm.abmval) abm.abmval = 0;
