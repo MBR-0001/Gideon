@@ -1,12 +1,7 @@
-import Util from '../../Util.js';
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
+import Util from '../../Util.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class News extends Command {
     constructor() {
@@ -26,6 +21,10 @@ class News extends Command {
         });
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message 
+     */
     async exec(message) {
         const emoji_ids = ['598886586284900354', '607658682246758445', '598886597244485654', '598886605641613353', '598886588545499186', '598886601476800513', '607657873534746634', '634764613434474496', '638489255169228830', '668513166380105770'];
 
@@ -70,7 +69,7 @@ class News extends Command {
 
         collector.on('collect', async message => {
             try {
-                let res = await Util.ABM_Test(message);
+                let res = await Util.Checks.ABM_Test(message);
                 if (res.match) {
                     collector.stop();
                     Util.log('ABM **in news** triggered by: ' + message.author.tag + ' (' + res.content + ')');
@@ -91,16 +90,18 @@ class News extends Command {
             const tmvt = this.client.guilds.cache.get('595318490240385037');
             if (!tmvt) {
                 Util.log('Couldn\'t get TV server when running news!');
+                collector.stop();
                 return message.channel.send(Util.CreateEmbed('An error occurred, please try again later!'));
             }
 
             const news_channel = tmvt.channels.cache.get('595944027208024085');
             if (!news_channel) {
                 Util.log('Couldn\'t get news channel when running news!');
+                collector.stop();
                 return message.channel.send(Util.CreateEmbed('An error occurred, please try again later!'));
             }
 
-            //<@&NUMBER> is how roles are represented | NUMBER - role id
+            //<@&snowflake> is how roles are represented
             let roles_ping_msg = roles_to_ping.length > 0 ? roles_to_ping.map(x => '<@&' + x + '>').join(' ') : null;
             news_channel.send(roles_ping_msg, {embed: news}).then(async () => {
                 await Util.delay(200);

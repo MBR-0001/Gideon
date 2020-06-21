@@ -1,12 +1,7 @@
-import Util from '../../Util.js';
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
+import Util from '../../Util.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class Slowmode extends Command {
     constructor() {
@@ -14,8 +9,10 @@ class Slowmode extends Command {
             aliases: ['sm', 'slowmode'],
             category: 'admin',
             channel: 'guild',
-            args: [ { id: 'amount', type: 'number', prompt: true },
-                { id: 'channel', type: 'textChannel', prompt: false} ],
+            args: [
+                { id: 'channel', type: 'textChannel', prompt: {optional: true}, default: m => { return m.channel; }, description: 'testass2' },
+                { id: 'amount', type: 'number', prompt: false, description: 'testass' },
+            ],
             clientPermissions: ['MANAGE_CHANNELS'],
             userPermissions: ['MANAGE_CHANNELS'],
             description: 'Toggles slowmode',
@@ -23,17 +20,21 @@ class Slowmode extends Command {
         });
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {{channel: Discord.TextChannel, amount: number}} args 
+     */
     async exec(message, args) {
-        console.log(args);
         try {
             if (args.channel) {
-                await message.mentions.channels.first().setRateLimitPerUser(args.amount);
-                await message.reply(`Set slowmode for ${message.mentions.channels.first()} to \`${args[1]}\` ${args[1] == 1 ? 'second' : 'seconds'}!`);
+                await args.channel.setRateLimitPerUser(args.amount);
+                await message.reply(`Set slowmode for ${args.channel} to \`${args.amount}\` ${args.amount == 1 ? 'second' : 'seconds'}!`);
             }
         
             else {
                 await message.channel.setRateLimitPerUser(args.amount);
-                await message.reply(`Set slowmode for ${message.channel} to \`${args[0]}\` ${args[0] == 1 ? 'second' : 'seconds'}!`);
+                await message.reply(`Set slowmode for ${message.channel} to \`${args.amount}\` ${args.amount == 1 ? 'second' : 'seconds'}!`);
             }
         }
         

@@ -1,12 +1,7 @@
-import Util from '../../Util.js';
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
+import Util from '../../Util.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class SQLBackup extends Command {
     constructor() {
@@ -26,6 +21,9 @@ class SQLBackup extends Command {
         });
     }
 
+    /**
+     * @param {Discord.Message} message 
+     */
     async exec(message) {
         try {
             message.channel.send('Performing database backup, please wait...');

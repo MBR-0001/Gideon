@@ -1,11 +1,6 @@
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class Purge extends Command {
     constructor() {
@@ -21,6 +16,11 @@ class Purge extends Command {
         });
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {{msgamt: number}} args 
+     */
     async exec(message, args) {
         const msgamt = args.msgamt;
         

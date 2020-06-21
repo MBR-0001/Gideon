@@ -1,29 +1,30 @@
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class ChatChnl extends Command {
     constructor() {
         super('chatchnl', {
-            aliases: ['chatchannel'],
+            aliases: ['chatchannel', 'chatchnl'],
             category: 'admin',
             channel: 'guild',
             clientPermissions: ['MANAGE_MESSAGES'],
             userPermissions: ['MANAGE_MESSAGES'],
+            args: [ { id: 'channel', match: 'content', prompt: true } ],
             description: 'Sets a chatchannel for the AI',
             usage: 'chatchnl [reset] <channel>'
         });
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {{channel: string}} args 
+     */
     async exec(message, args) {
         let chat = this.client.getGuild.get(message.guild.id);
 
-        if (args[0].match(/(?:reset)/i)) {
+        if (args.channel.match(/(?:reset)/i)) {
             chat.chatchnl = '';
             this.client.setGuild.run(chat);
             message.channel.send(`Reset the AI chat channel for \`${message.guild.name}\`:white_check_mark:`);

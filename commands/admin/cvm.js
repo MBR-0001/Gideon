@@ -1,11 +1,6 @@
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class CVM extends Command {
     constructor() {
@@ -20,6 +15,9 @@ class CVM extends Command {
         });
     }
 
+    /**
+     * @param {Discord.Message} message 
+     */
     async exec(message) {
         let cvm = this.client.getGuild.get(message.guild.id);
         if (!cvm.cvmval) cvm.cvmval = 0;

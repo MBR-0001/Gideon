@@ -1,12 +1,7 @@
-import Util from '../../Util.js';
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
+import Util from '../../Util.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class Prefix extends Command {
     constructor() {
@@ -21,6 +16,11 @@ class Prefix extends Command {
         });
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message 
+     * @param {{text: string}} args 
+     */
     async exec(message, args) {
         let prefix = this.client.getGuild.get(message.guild.id);
 

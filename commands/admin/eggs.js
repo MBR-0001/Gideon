@@ -1,11 +1,6 @@
 import Akairo from 'discord-akairo';
+import Discord from 'discord.js';
 const Command = Akairo.Command;
-
-/**
- * @param {Discord.Client} gideon
- * @param {Discord.Message} message
- * @param {string[]} args
- */
 
 class Eggs extends Command {
     constructor() {
@@ -20,6 +15,9 @@ class Eggs extends Command {
         });
     }
 
+    /**
+     * @param {Discord.Message} message 
+     */
     async exec(message) {
         let eggs = this.client.getGuild.get(message.guild.id);
         if (!eggs.eastereggs) eggs.eastereggs = 0;
