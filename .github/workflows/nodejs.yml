@@ -20,7 +20,7 @@ jobs:
       run: npm install
 
     - name: ESLint
-      run: node_modules/.bin/eslint src
+      run: node_modules/.bin/eslint ./src
 
     - name: Run test
       run: npm test
