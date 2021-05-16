@@ -1,2 +1,2 @@
-. npm i --prefer-offline --no-audit && nodemon index.js
+nodemon -e ts  --exec 'npm run build'
 pause
