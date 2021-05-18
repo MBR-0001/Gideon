@@ -23,9 +23,6 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: ESLint
-      run: ls && ./node_modules/.bin/eslint ./src
-
     - name: Build
       run: npm run build
 
